@@ -14,10 +14,20 @@ class AddWordController: UIViewController {
     @IBOutlet weak var notesTextField: UITextView!
     @IBOutlet weak var repeatSwitch: UISwitch!
 
+    var currentWord = JDictionary(word: "", translation: "", pass: 2, notes: "")
+    var index : Int? = nil
+    var newlist : [JDictionary] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
-        
+        if (index != nil){
+            wordTextfield.text = currentWord.word
+            translateTextfield.text = currentWord.translation
+            if (currentWord.notes != "") {
+                notesTextField.text = currentWord.notes
+            }
+        }
         // Do any additional setup after loading the view.
     }
 
@@ -33,8 +43,15 @@ class AddWordController: UIViewController {
             alert.addButton(withTitle: "ОК")
             alert.show()
         }
+        performSegue(withIdentifier: "ready", sender: self)
     }
-
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "ready"){
+            let guest = segue.destination as! ViewController
+            let tmpDict = JDictionary(word: wordTextfield.text!, translation: translateTextfield.text!, pass: 2, notes: "")
+            guest.list.append(tmpDict)
+        }
+    }
     /*
     // MARK: - Navigation
 
