@@ -217,6 +217,7 @@
 				TargetAttributes = {
 					A7496CFA1E9B8AB1002EA5AE = {
 						CreatedOnToolsVersion = 8.3.1;
+						DevelopmentTeam = 8UYX9ASDJM;
 						ProvisioningStyle = Automatic;
 					};
 					A7496D111E9B8AB2002EA5AE = {
@@ -444,6 +445,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 8UYX9ASDJM;
 				INFOPLIST_FILE = dictionary/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jul.dictionary;
@@ -456,6 +458,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 8UYX9ASDJM;
 				INFOPLIST_FILE = dictionary/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jul.dictionary;

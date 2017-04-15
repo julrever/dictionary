@@ -18,7 +18,15 @@ class RepeatController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
+        if (list.count == 0) {
+            wordLabel.text = ""
+            alert.title = "Словарь пуст! Добавьте больше слов :)"
+            alert.addButton(withTitle: "ОК")
+            alert.show()
+            performSegue(withIdentifier: "backFromRepeat", sender: self)
+        } else {
         wordLabel.text = list[current].word
+        }
         
     }
 
@@ -28,7 +36,7 @@ class RepeatController: UIViewController {
     }
     
     @IBAction func missButton(_ sender: UIButton) {
-        alert.title = "Правильный перевод: " + list[current].translation
+        alert.title = list[current].word + " - " + list[current].translation
         alert.addButton(withTitle: "ОК")
         alert.show()
         current += 1
@@ -48,6 +56,7 @@ class RepeatController: UIViewController {
                 alert.title = "Слова для повторения закончились :)"
                 alert.addButton(withTitle: "ОК")
                 alert.show()
+                performSegue(withIdentifier: "backFromRepeat", sender: self)
             } else {
             wordLabel.text = list[current].word
             translationTextfield.text = ""
