@@ -13,7 +13,7 @@ class AddWordController: UIViewController {
     @IBOutlet weak var translateTextfield: UITextField!
     @IBOutlet weak var notesTextField: UITextView!
 
-    var currentWord = JDictionary(word: "", translation: "", pass: 2, notes: "")
+    var currentWord = JDictionary(word: "", translation: "", notes: "")
     var index : Int? = nil
     var newlist : [JDictionary] = []
     var langGe : Bool = true
@@ -48,12 +48,12 @@ class AddWordController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "ready"){
             let guest = segue.destination as! ViewController
-            let tmpDict = JDictionary(word: wordTextfield.text!, translation: translateTextfield.text!, pass: 2, notes: notesTextField.text!)
+            let tmpDict = JDictionary(word: wordTextfield.text!, translation: translateTextfield.text!, notes: notesTextField.text!)
             if (index != nil){
                 if (langGe) {
-                    guest.list = guest.list.sorted(by: { $0.word < $1.word })
+                    guest.list = guest.list.sorted(by: { $0.word.lowercased() < $1.word.lowercased() })
                 } else {
-                    guest.list = guest.list.sorted(by: { $0.translation < $1.translation })
+                    guest.list = guest.list.sorted(by: { $0.translation.lowercased() < $1.translation.lowercased() })
                 }
                 guest.list[index!] = tmpDict
             } else {

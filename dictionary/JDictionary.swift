@@ -11,13 +11,11 @@ import UIKit
 class JDictionary: NSObject {
     var word: String = ""
     var translation: String = ""
-    var pass: Int = 0
     var notes: String = ""
     
-    init(word: String, translation: String, pass: Int, notes: String){
+    init(word: String, translation: String, notes: String){
         self.word = word
         self.translation = translation
-        self.pass = pass
         self.notes = notes
     }
     

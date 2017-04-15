@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RepeatController: UIViewController {
+class RepeatController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var wordLabel: UILabel!
     @IBOutlet weak var translationTextfield: UITextField!
     var list : [JDictionary] = []
@@ -17,7 +17,6 @@ class RepeatController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
         if (list.count == 0) {
             wordLabel.text = ""
             alert.title = "Словарь пуст! Добавьте больше слов :)"
@@ -27,9 +26,14 @@ class RepeatController: UIViewController {
         } else {
         wordLabel.text = list[current].word
         }
-        
+        self.translationTextfield.delegate = self
     }
 
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         
@@ -50,7 +54,7 @@ class RepeatController: UIViewController {
     }
     
     @IBAction func readyButton(_ sender: UIButton) {
-        if (translationTextfield.text == list[current].translation){
+        if (translationTextfield.text?.lowercased() == list[current].translation.lowercased()){
             current += 1
             if (current == list.count) {
                 alert.title = "Слова для повторения закончились :)"
