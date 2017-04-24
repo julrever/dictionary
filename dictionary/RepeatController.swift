@@ -11,7 +11,7 @@ import UIKit
 class RepeatController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var wordLabel: UILabel!
     @IBOutlet weak var translationTextfield: UITextField!
-    var list : [JDictionary] = []
+    var list : [DBDictionary] = []
     var current : Int = 0
     let alert = UIAlertView()
     
@@ -40,7 +40,7 @@ class RepeatController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func missButton(_ sender: UIButton) {
-        alert.title = list[current].word + " - " + list[current].translation
+        alert.title = list[current].word! + " - " + list[current].translation!
         alert.addButton(withTitle: "ОК")
         alert.show()
         current += 1
@@ -54,7 +54,7 @@ class RepeatController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func readyButton(_ sender: UIButton) {
-        if (translationTextfield.text?.lowercased() == list[current].translation.lowercased()){
+        if (translationTextfield.text?.lowercased() == list[current].translation?.lowercased()){
             current += 1
             if (current == list.count) {
                 alert.title = "Слова для повторения закончились :)"

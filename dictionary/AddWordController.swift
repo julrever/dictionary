@@ -7,17 +7,18 @@
 //
 
 import UIKit
+import CoreData
 
 class AddWordController: UIViewController {
     @IBOutlet weak var wordTextfield: UITextField!
     @IBOutlet weak var translateTextfield: UITextField!
     @IBOutlet weak var notesTextField: UITextView!
 
-    var currentWord = JDictionary(word: "", translation: "", notes: "")
+    var currentWord : DBDictionary!
     var index : Int? = nil
     var newlist : [JDictionary] = []
-    var langGe : Bool = true
-    
+    var managedObjectContext : NSManagedObjectContext!
+    var list = [DBDictionary]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,14 @@ class AddWordController: UIViewController {
             wordTextfield.text = currentWord.word
             translateTextfield.text = currentWord.translation
             notesTextField.text = currentWord.notes
+        }
+        managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        
+        let wordRequest:NSFetchRequest<DBDictionary> = DBDictionary.fetchRequest()
+        do {
+            list = try managedObjectContext.fetch(wordRequest)
+        } catch {
+            print("couldn't load data")
         }
     }
 
@@ -42,24 +51,23 @@ class AddWordController: UIViewController {
             alert.show()                                        // ЕСЛИ ПОЛЯ НЕ ЗАПОЛНЕНЫ - ПРЕДПРЕЖДЕНИЕ
         }
         else {
-            performSegue(withIdentifier: "ready", sender: self)     // ИНАЧЕ - ВЫПОЛНИТЬ ПЕРЕХОД
-        }
-    }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "ready"){
-            let guest = segue.destination as! ViewController
-            let tmpDict = JDictionary(word: wordTextfield.text!, translation: translateTextfield.text!, notes: notesTextField.text!)
-            if (index != nil){
-                if (langGe) {
-                    guest.list = guest.list.sorted(by: { $0.word.lowercased() < $1.word.lowercased() })
-                } else {
-                    guest.list = guest.list.sorted(by: { $0.translation.lowercased() < $1.translation.lowercased() })
-                }
-                guest.list[index!] = tmpDict
+            if (index == nil)  {
+                let newWord = DBDictionary(context: managedObjectContext)
+                newWord.word = wordTextfield.text
+                newWord.translation = translateTextfield.text
+                newWord.notes = notesTextField.text
             } else {
-            guest.list.append(tmpDict)
+                list[index!].word = wordTextfield.text
+                list[index!].translation = translateTextfield.text
+                list[index!].notes = notesTextField.text
             }
+            
+            do {
+                try self.managedObjectContext.save()
+            } catch {
+                print("couldn't save data \(error.localizedDescription)")
+            }
+            performSegue(withIdentifier: "ready", sender: self)
         }
     }
-
 }

@@ -13,61 +13,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var segmentCntrl: UISegmentedControl!
-    var list : [JDictionary] = [JDictionary(word: "warum", translation: "почему", notes: ""),
-                JDictionary(word: "wie geht", translation: "как дела", notes: ""),
-                JDictionary(word: "fragen", translation: "спрашивать", notes: "666"),
-                JDictionary(word: "lieben", translation: "любить", notes: "bffggf"),
-                JDictionary(word: "lachen", translation: "смеяться", notes: ""),
-                JDictionary(word: "wohnen", translation: "жить", notes: "kek"),
-                JDictionary(word: "singen", translation: "петь", notes: ""),
-                JDictionary(word: "tanzen", translation: "танцевать", notes: ""),
-                JDictionary(word: "spielen", translation: "играть", notes: ""),
-                JDictionary(word: "arbeiten", translation: "работать", notes: ""),
-                JDictionary(word: "horen", translation: "слышать", notes: ""),
-                JDictionary(word: "ich", translation: "я", notes: "fgbf"),
-                JDictionary(word: "du", translation: "ты", notes: ""),
-                JDictionary(word: "er", translation: "он", notes: ""),
-                JDictionary(word: "sie", translation: "она", notes: ""),
-                JDictionary(word: "wir", translation: "мы", notes: ""),
-                JDictionary(word: "ihr", translation: "вы", notes: ""),
-                JDictionary(word: "sagen", translation: "говорить", notes: "")]
     var isSearching = false
-    var filteredList : [JDictionary] = []
+    var filteredList : [DBDictionary] = []
+    var list = [DBDictionary]()
+    var managedObjectContext : NSManagedObjectContext!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        list = list.sorted(by: { ($0.word?.lowercased())! < ($1.word?.lowercased())! })
         self.hideKeyboardWhenTappedAround()
-        list = list.sorted(by: { $0.word.lowercased() < $1.word.lowercased() })
         searchBar.delegate = self
         searchBar.returnKeyType = UIReturnKeyType.done
-        /*
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
-        let newWord = NSEntityDescription.insertNewObject(forEntityName: "DBDictionary", into: context)
-        newWord.setValue("warum", forKey: "word")
-        newWord.setValue("почему", forKey: "translation")
-        newWord.setValue("", forKey: "notes")
-        do{
-            try context.save()
-            print("SAVE")
+        managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        self.loadData()
+        
+    }
+    
+    func loadData(){
+        let wordRequest:NSFetchRequest<DBDictionary> = DBDictionary.fetchRequest()
+        do {
+            list = try managedObjectContext.fetch(wordRequest)
+            self.tableView.reloadData()
         } catch {
-            // lalala
+            print("couldn't load data")
         }
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "DBDictionary")
-        request.returnsObjectsAsFaults = false
-        do{
-            let results = try context.fetch(request)
-            if results.count > 0
-            {
-                for result in results as! [NSManagedObject]{
-                    if let nword = result.value(forKey: "word") as? String{
-                        print (nword)
-                    }
-                }
-            }
-        } catch{
-            //kek
-        }*/
     }
     
     override func didReceiveMemoryWarning() {
@@ -105,7 +74,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        performSegue(withIdentifier: "editCell", sender: self)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -115,8 +83,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // УДАЛЕНИЕ СТРОКИ ПО СВАЙПУ
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
+            managedObjectContext.delete(list[indexPath.row])
             list.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            do {
+                try self.managedObjectContext.save()
+            } catch {
+                print("couldn't delete data \(error.localizedDescription)")
+            }
         }
     }
     
@@ -126,7 +100,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let indexPath = self.tableView.indexPathForRow(at: tapLocation)
 
         let alert = UIAlertView()
-        alert.title = list[indexPath!.row].notes
+        alert.title = list[indexPath!.row].notes!
         alert.addButton(withTitle: "ОК")
         alert.show()
     }
@@ -138,7 +112,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         else {
             isSearching = true
-            filteredList = list.filter({$0.word.lowercased().contains((searchBar.text?.lowercased())!) || $0.translation.lowercased().contains((searchBar.text?.lowercased())!) })
+            filteredList = list.filter({$0.word!.lowercased().contains((searchBar.text?.lowercased())!) || $0.translation!.lowercased().contains((searchBar.text?.lowercased())!) })
             tableView.reloadData()
         }
     }
@@ -149,9 +123,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let indexPath = tableView.indexPath(for: sender as! TableViewCell)
             let i = indexPath?.row
             let guest = segue.destination as! AddWordController
-            if (segmentCntrl.selectedSegmentIndex == 1) {
-                guest.langGe = false
-            }
             guest.index = i
             guest.currentWord = list[i!]
         } else if (segue.identifier == "repeat"){               // ОТПРАВКА ПЕРЕМЕШАННОГО МАССИВА ДЛЯ ПОВТОРЕНИЯ
@@ -163,9 +134,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // СОРТИРОВКА ПО ЯЗЫКУ ПРИ НАЖАТИИ НА SegmentedControl
     @IBAction func segmentPushed(_ sender: UISegmentedControl) {
         if (segmentCntrl.selectedSegmentIndex == 0){
-            list = list.sorted(by: { $0.word.lowercased() < $1.word.lowercased() })
+            list = list.sorted(by: { ($0.word?.lowercased())! < ($1.word?.lowercased())! })
         } else if (segmentCntrl.selectedSegmentIndex == 1) {
-            list = list.sorted(by: { $0.translation.lowercased() < $1.translation.lowercased()})
+            list = list.sorted(by: { ($0.translation?.lowercased())! < ($1.translation?.lowercased())!})
         }
         tableView.reloadData()
     }
