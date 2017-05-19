@@ -29,6 +29,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
+    
     func loadData(){
         let wordRequest:NSFetchRequest<DBDictionary> = DBDictionary.fetchRequest()
         do {
@@ -51,7 +52,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return (list.count)
     }
     
-    // ЗАПОЛНЕНИЕ ТАБЛИЦЫ
+    
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TableViewCell
         if (isSearching){
@@ -80,7 +81,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return true
     }
     
-    // УДАЛЕНИЕ СТРОКИ ПО СВАЙПУ
+    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             managedObjectContext.delete(list[indexPath.row])
@@ -94,6 +95,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    
     func tappedMe(sender : UITapGestureRecognizer)
     {
         let tapLocation = sender.location(in: self.tableView)
@@ -104,6 +106,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         alert.addButton(withTitle: "ОК")
         alert.show()
     }
+    
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == nil || searchBar.text == "" {
@@ -117,21 +120,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    // ПЕРЕДАЧА ДАННЫХ В ДРУГИЕ КОНТРОЛЛЕРЫ
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "editCell"){                    // ОТПРАВКА ВЫБРАННОГО СЛОВА ДЛЯ РЕДАКТИРОВАНИЯ
+        if (segue.identifier == "editCell"){
             let indexPath = tableView.indexPath(for: sender as! TableViewCell)
             let i = indexPath?.row
             let guest = segue.destination as! AddWordController
             guest.index = i
             guest.currentWord = list[i!]
-        } else if (segue.identifier == "repeat"){               // ОТПРАВКА ПЕРЕМЕШАННОГО МАССИВА ДЛЯ ПОВТОРЕНИЯ
+        } else if (segue.identifier == "repeat"){
             let guest = segue.destination as! RepeatController
             guest.list = self.list.shuffled()
         }
     }
     
-    // СОРТИРОВКА ПО ЯЗЫКУ ПРИ НАЖАТИИ НА SegmentedControl
+    
     @IBAction func segmentPushed(_ sender: UISegmentedControl) {
         if (segmentCntrl.selectedSegmentIndex == 0){
             list = list.sorted(by: { ($0.word?.lowercased())! < ($1.word?.lowercased())! })
@@ -142,7 +145,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 }
 
-// СКРЫТИЕ КЛАВИАТУРЫ ПО НАЖАТИЮ ВНЕ
+
 extension UIViewController {
     func hideKeyboardWhenTappedAround() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))

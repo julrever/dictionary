@@ -78,7 +78,6 @@ class RepeatController: UIViewController, UITextFieldDelegate {
 }
 
 extension MutableCollection where Indices.Iterator.Element == Index {
-    /// Shuffles the contents of this collection.
     mutating func shuffle() {
         let c = count
         guard c > 1 else { return }
@@ -93,7 +92,6 @@ extension MutableCollection where Indices.Iterator.Element == Index {
 }
 
 extension Sequence {
-    /// Returns an array with the contents of this sequence, shuffled.
     func shuffled() -> [Iterator.Element] {
         var result = Array(self)
         result.shuffle()

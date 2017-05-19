@@ -42,13 +42,13 @@ class AddWordController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
-    // НАЖАТИЕ КНОПКИ "ГОТОВО"
+    
     @IBAction func doneButton(_ sender: UIButton) {
         if (wordTextfield.text?.isEmpty)! || (translateTextfield.text?.isEmpty)! {
             let alert = UIAlertView()
             alert.title = "Заполните все поля"
             alert.addButton(withTitle: "ОК")
-            alert.show()                                        // ЕСЛИ ПОЛЯ НЕ ЗАПОЛНЕНЫ - ПРЕДПРЕЖДЕНИЕ
+            alert.show()
         }
         else {
             if (index == nil)  {
